@@ -6,7 +6,10 @@ module.exports = (sequelize, DataTypes) => {
     content: DataTypes.STRING,
     parent: DataTypes.INTEGER,
     seq: DataTypes.INTEGER
-  }, {});
+  }, {
+    charset:'utf8',
+    collate:'utf8_general_ci',
+  });
   comment.associate = function(models) {
     // associations can be defined here
     comment.belongsTo(models.post, {

@@ -2,3 +2,5 @@
 node_modules
 profiles
 posterImage
+migrations
+*.log

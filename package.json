@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon node server.js"
+    "start": "cross-env NODE_ENV=production PORT=5000 pm2 start server.js -i 0",
+    "dev": "nodemon node server.js"
   },
   "author": "heesu",
   "license": "ISC",
@@ -17,9 +18,11 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-session": "^1.17.0",
+    "helmet": "^3.21.3",
+    "hpp": "^0.2.3",
     "morgan": "^1.9.1",
     "multer": "^1.4.2",
-    "mysql2": "^2.0.0",
+    "mysql2": "^2.1.0",
     "nodemailer": "^6.4.2",
     "nodemailer-smtp-transport": "^2.7.4",
     "nodemon": "^1.19.4",
@@ -27,6 +30,8 @@
     "passport-facebook": "^3.0.0",
     "passport-kakao": "^1.0.0",
     "passport-local": "^1.0.0",
-    "sequelize": "^5.21.1"
+    "pm2": "^4.2.3",
+    "sequelize": "^5.21.1",
+    "winston": "^3.2.1"
   }
 }
