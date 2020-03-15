@@ -11,12 +11,13 @@ const { isLoggedIn, isNotLoggedIn } = require('./middlewares');
 const {User} = require('../models');
 const path = require('path');
 const {userinfo} = require('../passport/kakaoStrategy');
+const AWS = require('aws-sdk');
+const multerS3 = require('multer-s3');
 
 
 const router = express.Router();
 router.post('/login',isNotLoggedIn, (req,res,next) => {
   passport.authenticate('local',(error,user,info) => {
-    console.log(user);
     if(error) {
       res.status(500).json({
         message: error || 'Oops, something happened!',
@@ -33,12 +34,10 @@ router.post('/login',isNotLoggedIn, (req,res,next) => {
     return req.login(user, (loginError) => {
       if(loginError) {
         return (
-          next(loginError),
-          console.log('continue')
+          next(loginError)
         );
       }
       return (
-        
         res.json({
           id:user.id,
           email:user.email,
@@ -108,8 +107,6 @@ router.post('/signup', async(req,res) => {
       "<div><h1>su_blog회원 가입요청에 감사드립니다.</h1><br><h3>가입을 원하신다면 아래 동의함을 클릭해주세요!</h3> <br><a style='color:white; font-weight:900; text-decoration: none;' href="+link+"><div style='background-color:rgb(13,72,50); padding:15px; border-radius:7px;height:25px;width:20%;text-align:center;font-size:2em'> 동의함</div></div></a>"
     }
   
-    console.log(mailOptions);
-  
     smtpTransport.sendMail(mailOptions, async (error, response) => {
       if(error){
         console.log(error);
@@ -117,7 +114,6 @@ router.post('/signup', async(req,res) => {
       }else{
         const hash = await bcrypt.hash(password, 12);
         const user = await User.findOne({where : {email}})
-        console.log(key_for_verify);
         if(!user) {
           await User.create({
             email,
@@ -147,7 +143,6 @@ router.post('/signup', async(req,res) => {
 });
 
 router.get('/verify',async(req,res) => {
-  console.log(req.query.id);
   await User.update({verify:true},{where:{key_verify:req.query.id}})
   res.send('<script>alert("인증이 완료되었습니다. 로그인 해 주세요!");</script>')
 })
@@ -172,7 +167,26 @@ router.get('/logout', (req,res) => {
   req.session.destroy();
   res.send('logout');
 });
+//AWS S3 production 모드에서 이미지 업로드
+AWS.config.update({
+  accessKeyId:process.env.AWSAccessKeyId,
+  secretAccessKey:process.env.AWSSecretKey,
+  region: 'ap-northeast-2',
+});
 
+const uploadS3 = multer({
+  storage: multerS3({
+    s3: new AWS.S3(),
+    bucket: 'sublogs3',
+    key(req, file, cb) {
+      cb(null, `original/${+new Date()}${path.basename(file.originalname)}`);
+    },
+  }),
+  limits: {fileSize: 5 * 1024 * 1024},
+});
+
+
+// 개발환경에서 이미지 업로드 
 let storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'profiles/')
@@ -186,20 +200,35 @@ let storage = multer.diskStorage({
 
 let upload = multer({ storage })
 
-router.post('/profile/img/:nick',upload.single('img'), (req, res) => {
-  console.log(req,'asd');
-  const {formdata} = req.body
-  const nick = req.params.nick;
-  if(formdata) {
-    User.update({profile_img:formdata},{where:{nick}})
-    res.json({ path: formdata });
-  }else if(req.file){
-    User.update({profile_img:req.file.filename},{where:{nick}})
-    res.json({ path: `${req.file.filename }` });
-  }else {
-    res.status("404").json("No file to Upload!")
-  }
-});
+if(process.env.NODE_ENV==='production') {
+  router.post('/profile/img/:nick',uploadS3.single('img'), (req, res) => {
+    const {formdata} = req.body
+    const nick = req.params.nick;
+    if(formdata) {
+      User.update({profile_img:formdata},{where:{nick}})
+      res.json({ path: formdata });
+    }else if(req.file){
+      User.update({profile_img:req.file.location},{where:{nick}})
+      res.json({ path: `${req.file.location }` });
+    }else {
+      res.status("404").json("No file to Upload!")
+    }
+  });
+} else {
+  router.post('/profile/img/:nick',upload.single('img'), (req, res) => {
+    const {formdata} = req.body
+    const nick = req.params.nick;
+    if(formdata) {
+      User.update({profile_img:formdata},{where:{nick}})
+      res.json({ path: formdata });
+    }else if(req.file){
+      User.update({profile_img:req.file.filename},{where:{nick}})
+      res.json({ path: `${req.file.filename }` });
+    }else {
+      res.status("404").json("No file to Upload!")
+    }
+  });
+}
 
 router.post('/profile/save', async(req,res) => {
   const {phone, img_path,id} = req.body;

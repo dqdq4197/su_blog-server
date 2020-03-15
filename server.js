@@ -16,7 +16,7 @@ const authRouter = require('./routes/auth');
 const postRouter = require('./routes/post');
 const homeRouter = require('./routes/home');
 const commentRouter = require('./routes/comment');
-const posttingRouter = require('./routes/postting');
+const postingRouter = require('./routes/posting');
 const tagRouter = require('./routes/tag');
 const settingRouter = require('./routes/setting');
 const cors = require('cors');
@@ -43,8 +43,10 @@ if(process.env.NODE_ENV === 'production') {
 //   res.json({ success: true })
 // })
 //app.use(express.static(path.join(__dirname,'public')));
-app.use('*/img/', express.static(path.join(__dirname,'/profiles')));
-app.use('*/img/', express.static(path.join(__dirname,'/posterImage')));
+if(process.env.NODE_ENV !=='production') {
+  app.use('*/img/', express.static(path.join(__dirname,'/profiles')));
+  app.use('*/img/', express.static(path.join(__dirname,'/posterImage')));
+}
 app.use(cors());
 
 app.use(express.json());
@@ -75,7 +77,7 @@ app.use(passport.session());
 app.use('/auth', authRouter);
 app.use('/post', postRouter);
 app.use('/home', homeRouter);
-app.use('/postting', posttingRouter);
+app.use('/posting', postingRouter);
 app.use('/comment', commentRouter);
 app.use('/about', aboutRouter);
 app.use('/tag', tagRouter);

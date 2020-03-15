@@ -31,7 +31,6 @@ router.get('/getPost/:tag', (req,res) => {
                 {hashTags: tag }
             ]
     }}).then((value) => {
-        console.log(value)
         res.json(value);
     })
 })

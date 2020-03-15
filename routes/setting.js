@@ -17,7 +17,7 @@ router.get('/:nick', (req,res) => {
 router.patch('/:nick',(req,res) => {
     let {skill} = req.body;
     const nick = req.params.nick;
-    console.log(skill.join(','), nick);
+    
     skill = skill.join(',')
 
     User.update({

@@ -16,7 +16,6 @@ module.exports = (passport) => {
         }
         userinfo = {...profile};
         module.exports = { userinfo }
-        console.log('----------------', userinfo);
         done(null, exUser);
       } else {
         const newUser = await User.create({

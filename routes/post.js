@@ -28,7 +28,6 @@ router.post('/upload', (req,res,next) => {
 
 router.post('/modify/:posterId', async(req,res,next) => {
     const {outputData, isHide,userId, nick,tumnailTitle,hashTags,skills,tumnailImg} =req.body;
-    console.log(isHide)
     await Post.update({
         content:outputData,
         userId,

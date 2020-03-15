@@ -8,7 +8,7 @@ module.exports = {
         host: "127.0.0.1",
         dialect:'mysql',
         operatorsAliases: false,
-        logging:false
+        logging:false,
     },
     production: {
         username: process.env.SEQUELIZE_USERNAME,
