@@ -28,7 +28,7 @@ module.exports = (sequelize,DataTypes) => (
         profile_img: {
             type:DataTypes.STRING(200),
             allowNull:true,
-            defaultValue:'basic.png',
+            defaultValue:'basic.gif',
         },
         skills: {
             type:DataTypes.STRING,

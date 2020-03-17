@@ -62,7 +62,9 @@ router.get('/facebook/callback',
   passport.authenticate('facebook', { failureRedirect: '/' }),
   function(req, res) {
     // Successful authentication, redirect home.
-    res.redirect('/home');
+    // console.log(req.user)
+    console.log(req.user.dataValues);
+    res.redirect(process.env.NODE_ENV === 'production' ? 'https://www.sublog.co/home' : 'http://localhost:3000/social?token=' + req.user.dataValues.snsId);
   }
 );
 
@@ -240,6 +242,29 @@ router.get('/kakao', passport.authenticate('kakao'));
 router.get('/kakao/callback', passport.authenticate('kakao', {
   failureRedirect: '/',
 }), (req, res) => {
-  res.redirect('http://localhost:3000/home');
+  res.redirect(process.env.NODE_ENV === 'production' ? 'https://www.sublog.co/home' : 'http://localhost:3000/social?token=' + req.user.dataValues.snsId);
 });
+
+router.get('/social/:snsid', (req,res) => {
+  const snsId = req.params.snsid
+  User.findOne({where:{snsId}})
+  .then((info) => {
+    let userInfo = {
+      id:info.id,
+      email:info.email,
+      nick: info.nick,
+      createdAt: info.createdAt,
+      intro:info.intro,
+      profile_img:info.profile_img,
+      skills:info.skills,
+      social:{
+        
+      }
+
+
+    }
+    console.log(info);
+    return res.json(userInfo);
+  })
+})
 module.exports = router;
