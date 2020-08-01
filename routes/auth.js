@@ -64,7 +64,7 @@ router.get('/facebook/callback',
     // Successful authentication, redirect home.
     // console.log(req.user)
     console.log(req.user.dataValues);
-    res.redirect(process.env.NODE_ENV === 'production' ? 'https://www.sublog.co/home' : 'http://localhost:3000/social?token=' + req.user.dataValues.snsId);
+    res.redirect(process.env.NODE_ENV === 'production' ? 'https://www.sublog.co/social?token=' + req.user.dataValues.snsId : 'http://localhost:3000/social?token=' + req.user.dataValues.snsId);
   }
 );
 
@@ -242,12 +242,12 @@ router.get('/kakao', passport.authenticate('kakao'));
 router.get('/kakao/callback', passport.authenticate('kakao', {
   failureRedirect: '/',
 }), (req, res) => {
-  res.redirect(process.env.NODE_ENV === 'production' ? 'https://www.sublog.co/home' : 'http://localhost:3000/social?token=' + req.user.dataValues.snsId);
+  res.redirect(process.env.NODE_ENV === 'production' ? 'https://www.sublog.co/social?token=' + req.user.dataValues.snsId : 'http://localhost:3000/social?token=' + req.user.dataValues.snsId);
 });
-
+console.log(process.env.NODE_ENV);
 router.get('/social/:snsid', (req,res) => {
   const snsId = req.params.snsid
-  User.findOne({where:{snsId}})
+  User.findOne({where:{snsid}})
   .then((info) => {
     let userInfo = {
       id:info.id,
