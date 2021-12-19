@@ -111,7 +111,7 @@ router.post('/signup', async(req,res) => {
   
     smtpTransport.sendMail(mailOptions, async (error, response) => {
       if(error){
-        console.log(error);
+        console.log(error, email);
         res.send("error");
       }else{
         const hash = await bcrypt.hash(password, 12);
