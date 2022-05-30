@@ -6,7 +6,7 @@ client 프로젝트는 다음 Repository에서 확인하실 수 있습니다. <b
 client: https://github.com/dqdq4197/su_blog-client 
 ## Su_blog 사용하기
 
-현재 [sublog](http://www.sublog.co) 웹 사이트를 통해 확인하실 수 있습니다. 
+현재 [sublog](http://www.sublog.co/home) 웹 사이트를 통해 확인하실 수 있습니다. 
 ```
 // 기능 테스트를 위한 테스터 계정입니다.
 
